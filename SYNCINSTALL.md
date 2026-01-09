@@ -55,9 +55,13 @@ cp src/hooks/chainguard_enforcer.py ~/.chainguard/hooks/
 # Memory-Inject Hook (UserPromptSubmit - injiziert Memory-Kontext VOR LLM)
 cp src/hooks/chainguard_memory_inject.py ~/.chainguard/hooks/
 
+# Scope-Reminder Hook (UserPromptSubmit - erinnert an set_scope wenn nicht gesetzt)
+cp src/hooks/chainguard_scope_reminder.py ~/.chainguard/hooks/
+
 # Verifizieren
 grep "Enforcer Hook v" ~/.chainguard/hooks/chainguard_enforcer.py
 grep "Memory Injection Hook v" ~/.chainguard/hooks/chainguard_memory_inject.py
+ls -la ~/.chainguard/hooks/chainguard_scope_reminder.py
 ```
 
 ### 4. Templates synchronisieren
@@ -99,6 +103,7 @@ cp -r src/mcp-server/chainguard ~/.chainguard/ && \
 cp src/mcp-server/chainguard_mcp.py ~/.chainguard/ && \
 cp src/hooks/chainguard_enforcer.py ~/.chainguard/hooks/ && \
 cp src/hooks/chainguard_memory_inject.py ~/.chainguard/hooks/ && \
+cp src/hooks/chainguard_scope_reminder.py ~/.chainguard/hooks/ && \
 cp src/templates/CHAINGUARD.md.block ~/.chainguard/templates/ && \
 cp templates/CLAUDE.md ~/.chainguard/templates/ && \
 cp -r docs/ ~/.chainguard/ && \
@@ -153,6 +158,7 @@ cp -r src/mcp-server/chainguard ~/.chainguard/
 | `src/mcp-server/chainguard_mcp.py` | `~/.chainguard/chainguard_mcp.py` | MCP Wrapper |
 | `src/hooks/chainguard_enforcer.py` | `~/.chainguard/hooks/chainguard_enforcer.py` | PreToolUse Enforcer Hook |
 | `src/hooks/chainguard_memory_inject.py` | `~/.chainguard/hooks/chainguard_memory_inject.py` | UserPromptSubmit Memory Injection |
+| `src/hooks/chainguard_scope_reminder.py` | `~/.chainguard/hooks/chainguard_scope_reminder.py` | UserPromptSubmit Scope Reminder |
 | `src/templates/CHAINGUARD.md.block` | `~/.chainguard/templates/CHAINGUARD.md.block` | Hook-Template |
 | `templates/CLAUDE.md` | `~/.chainguard/templates/CLAUDE.md` | Vollständiges Template |
 | `docs/` | `~/.chainguard/docs/` | Dokumentation |

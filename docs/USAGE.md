@@ -130,8 +130,37 @@ Das Chainguard Package besteht aus **21 Modulen**:
 │   └── ...
 ├── chainguard_mcp.py     # Wrapper (ruft chainguard.server auf)
 ├── hooks/
+│   ├── chainguard_enforcer.py       # PreToolUse: Blockiert Edit/Write
+│   ├── chainguard_memory_inject.py  # UserPromptSubmit: Memory-Kontext
+│   └── chainguard_scope_reminder.py # UserPromptSubmit: Scope-Reminder
 └── projects/
 ```
+
+## Hooks
+
+Chainguard nutzt Claude Code Hooks für automatische Enforcement:
+
+### 1. Scope Reminder Hook (v6.1)
+
+**UserPromptSubmit** - Erinnert an `chainguard_set_scope()` wenn kein Scope aktiv ist.
+
+**Warum?** Ohne diesen Hook konnte Claude bei reinen Analyse-Aufgaben (Task/Explore) den Scope "vergessen", weil der Enforcer-Hook nur bei Edit/Write greift.
+
+**Features:**
+- Prüft ob Scope existiert BEVOR Claude antwortet
+- 30-Minuten-Cooldown (keine Spam-Warnungen)
+- Überspringt kurze/konversationelle Prompts ("ja", "ok", etc.)
+- Überspringt Slash-Commands (/help, /clear, etc.)
+
+### 2. Enforcer Hook
+
+**PreToolUse** - Blockiert Edit/Write-Aufrufe bei Regelverstößen:
+- Schema-Dateien ohne DB-Check → BLOCK
+- Blocking Alerts vorhanden → BLOCK
+
+### 3. Memory Inject Hook
+
+**UserPromptSubmit** - Injiziert relevanten Memory-Kontext aus Long-Term Memory.
 
 ## chainguard_analyze
 

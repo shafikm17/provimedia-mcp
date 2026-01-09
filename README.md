@@ -187,12 +187,23 @@ chainguard_db_schema()
 │   └── ...
 ├── chainguard_mcp.py     # MCP Entry Point
 ├── hooks/                # Claude Code Hooks
-│   ├── chainguard_enforcer.py    # PreToolUse Hook
-│   └── chainguard_memory_inject.py # Memory Injection
+│   ├── chainguard_enforcer.py      # PreToolUse: Block Edit/Write violations
+│   ├── chainguard_memory_inject.py # UserPromptSubmit: Memory context injection
+│   └── chainguard_scope_reminder.py # UserPromptSubmit: Scope reminder (v6.1)
 ├── projects/             # Project State Storage
 ├── memory/               # ChromaDB Vector Storage
 └── templates/            # CLAUDE.md Templates
 ```
+
+### Hooks
+
+Chainguard uses Claude Code hooks for automatic enforcement:
+
+| Hook | Type | Purpose |
+|------|------|---------|
+| `chainguard_scope_reminder.py` | UserPromptSubmit | Reminds to set scope before starting work |
+| `chainguard_enforcer.py` | PreToolUse | Blocks Edit/Write on rule violations |
+| `chainguard_memory_inject.py` | UserPromptSubmit | Injects relevant memory context |
 
 ## Documentation
 
@@ -251,6 +262,12 @@ See the [LICENSE](LICENSE) file for full details.
 Created and maintained by **[Provimedia GmbH](https://provimedia.de)**
 
 ## Changelog
+
+### v6.1.0
+- **Scope Reminder Hook** - New UserPromptSubmit hook that reminds to set scope
+- Fixes the gap where pure analysis tasks (Task/Explore) could bypass scope enforcement
+- 30-minute cooldown to prevent spam
+- Skips short/conversational prompts automatically
 
 ### v6.0.0
 - **TOON Encoder** - Token-Oriented Object Notation for 30-60% token savings

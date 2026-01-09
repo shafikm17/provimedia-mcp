@@ -268,6 +268,7 @@ WRAPPER_EOF
         "hooks/scope-reminder.sh:hooks/scope-reminder.sh"
         "hooks/chainguard_enforcer.py:hooks/chainguard_enforcer.py"
         "hooks/chainguard_memory_inject.py:hooks/chainguard_memory_inject.py"
+        "hooks/chainguard_scope_reminder.py:hooks/chainguard_scope_reminder.py"
         "templates/CHAINGUARD.md.block:templates/CHAINGUARD.md.block"
     )
 
@@ -591,6 +592,7 @@ configure_hooks() {
     local TRACK_HOOK="$CHAINGUARD_HOME/hooks/auto-track.sh"
     local ENFORCER_HOOK="$PYTHON_CMD $CHAINGUARD_HOME/hooks/chainguard_enforcer.py"
     local MEMORY_HOOK="$PYTHON_CMD $CHAINGUARD_HOME/hooks/chainguard_memory_inject.py"
+    local SCOPE_REMINDER_HOOK="$PYTHON_CMD $CHAINGUARD_HOME/hooks/chainguard_scope_reminder.py"
 
     if [[ "$JQ_AVAILABLE" != "true" ]]; then
         warn "jq nicht verfügbar. Hooks müssen manuell konfiguriert werden."
@@ -603,7 +605,8 @@ configure_hooks() {
         "matcher": "",
         "hooks": [
           {"type": "command", "command": "$SCOPE_HOOK"},
-          {"type": "command", "command": "$MEMORY_HOOK"}
+          {"type": "command", "command": "$MEMORY_HOOK"},
+          {"type": "command", "command": "$SCOPE_REMINDER_HOOK"}
         ]
       }
     ],
@@ -625,15 +628,16 @@ EOF
     fi
 
     # Alle Hooks hinzufügen: UserPromptSubmit + PreToolUse + PostToolUse
-    jq --arg scope_hook "$SCOPE_HOOK" --arg track_hook "$TRACK_HOOK" --arg enforcer_hook "$ENFORCER_HOOK" --arg memory_hook "$MEMORY_HOOK" '
+    jq --arg scope_hook "$SCOPE_HOOK" --arg track_hook "$TRACK_HOOK" --arg enforcer_hook "$ENFORCER_HOOK" --arg memory_hook "$MEMORY_HOOK" --arg scope_reminder_hook "$SCOPE_REMINDER_HOOK" '
         .hooks = (.hooks // {}) |
-        # UserPromptSubmit Hook für Scope-Reminder + Memory Injection
+        # UserPromptSubmit Hook für Scope-Reminder (legacy) + Memory Injection + Scope Reminder (Python)
         .hooks.UserPromptSubmit = [
             {
                 "matcher": "",
                 "hooks": [
                     {"type": "command", "command": $scope_hook},
-                    {"type": "command", "command": $memory_hook}
+                    {"type": "command", "command": $memory_hook},
+                    {"type": "command", "command": $scope_reminder_hook}
                 ]
             }
         ] |
@@ -655,8 +659,9 @@ EOF
 
     if [[ -s "$CLAUDE_SETTINGS_FILE.tmp" ]]; then
         mv "$CLAUDE_SETTINGS_FILE.tmp" "$CLAUDE_SETTINGS_FILE"
-        success "Scope-Reminder Hook konfiguriert (UserPromptSubmit)"
+        success "Scope-Reminder Hook (legacy) konfiguriert (UserPromptSubmit)"
         success "Memory-Inject Hook konfiguriert (UserPromptSubmit) - PRE-INJECTION!"
+        success "Scope-Reminder Hook (Python v6.1) konfiguriert (UserPromptSubmit)"
         success "Enforcer Hook konfiguriert (PreToolUse) - HARD BLOCKING!"
         success "Auto-Track Hook konfiguriert (PostToolUse)"
     else
