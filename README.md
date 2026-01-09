@@ -235,6 +235,14 @@ Created and maintained by **[Provimedia GmbH](https://provimedia.de)**
 
 ## Changelog
 
+### v6.0.0
+- **XML Response System** - Structured XML output for all tool responses
+- New `xml_response.py` module with `XMLResponse` class
+- Convenience functions: `xml_success`, `xml_error`, `xml_warning`, `xml_blocked`
+- Context injection via XML templates
+- Feature flag `XML_RESPONSES_ENABLED` (default: true)
+- 531 new tests for XML response module
+
 ### v5.4.0
 - Deep Logic Summaries with `code_summarizer.py`
 - New `chainguard_memory_summarize` tool
