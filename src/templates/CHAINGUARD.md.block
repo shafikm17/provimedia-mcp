@@ -1,4 +1,4 @@
-<!-- CHAINGUARD-MANDATORY-START v5.3.0 -->
+<!-- CHAINGUARD-MANDATORY-START v6.0.0 -->
 
 # ================================================
 # STOP - LIES DAS ZUERST!
@@ -15,12 +15,12 @@
 # ALLE anderen Chainguard-Tools sind BLOCKIERT
 # bis du set_scope aufgerufen hast!
 #
-# v5.3: HARD ENFORCEMENT + Task-Mode System
+# v6.0: TOON Token-Optimierung + Task-Mode System
 # BLOCKIERT wenn DB-Schema nicht geprüft wurde!
 #
 # ================================================
 
-## CHAINGUARD v5.3 - PFLICHT-ANWEISUNGEN (HARD ENFORCEMENT!)
+## CHAINGUARD v6.0 - PFLICHT-ANWEISUNGEN (HARD ENFORCEMENT!)
 
 | # | PFLICHT-AKTION | WANN |
 |---|----------------|------|
@@ -30,7 +30,7 @@
 | 4 | `chainguard_test_endpoint(...)` | **Bei Web-Projekten: VOR finish!** |
 | 5 | `chainguard_finish(confirmed=True)` | Am Task-Ende |
 
-> **v5.3 Features:** Task-Mode System, Long-Term Memory, AST-Analyse, Architektur-Erkennung
+> **v6.0 Features:** TOON Token-Optimierung (30-60% Ersparnis), Task-Mode System, Long-Term Memory (optional)
 
 ### Minimaler Workflow
 
