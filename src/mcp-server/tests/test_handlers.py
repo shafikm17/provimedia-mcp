@@ -757,7 +757,8 @@ class TestHandleProjects:
 
             result = await handle_projects({})
 
-            assert "No projects" in result[0].text
+            # v6.0: XML or plain text
+            assert "No projects" in result[0].text or "<count>0</count>" in result[0].text
 
     @pytest.mark.asyncio
     async def test_list_projects(self):
@@ -782,7 +783,8 @@ class TestHandleConfig:
         """Test viewing config."""
         result = await handle_config({})
 
-        assert "val_threshold" in result[0].text
+        # v6.0: XML or plain text
+        assert "val_threshold" in result[0].text or "validation_threshold" in result[0].text
 
 
 # =============================================================================

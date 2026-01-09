@@ -661,9 +661,39 @@ async def handle_track_batch(args: Dict[str, Any]) -> List[TextContent]:
     state.add_action(f"BATCH: {action} [{file_names_str}]")
     await pm.save_async(state, immediate=True)  # v4.16: immediate für Konsistenz
 
+    actual_tracked = len(files) if skip_validation else tracked
+
+    # v6.0: XML Response
+    if XML_RESPONSES_ENABLED:
+        data = {
+            "tracked": actual_tracked,
+            "total": len(files),
+            "action": action,
+            "files_changed": state.files_changed,
+            "files_since_validation": state.files_since_validation
+        }
+
+        if errors:
+            data["errors"] = errors[:5]
+        if oos_count > 0:
+            data["out_of_scope"] = oos_count
+
+        if errors:
+            return _text(xml_warning(
+                tool="track_batch",
+                message=f"{actual_tracked}/{len(files)} tracked, {len(errors)} Fehler",
+                data=data
+            ))
+
+        return _text(xml_success(
+            tool="track_batch",
+            message=f"{actual_tracked}/{len(files)} files tracked",
+            data=data
+        ))
+
+    # Legacy plain text response
     parts = []
     if tracked > 0 or (skip_validation and len(files) > 0):
-        actual_tracked = len(files) if skip_validation else tracked
         parts.append(f"✓ {actual_tracked}/{len(files)} files tracked")
 
     if errors:
@@ -1152,6 +1182,27 @@ async def handle_clear_alerts(args: Dict[str, Any]) -> List[TextContent]:
 async def handle_projects(args: Dict[str, Any]) -> List[TextContent]:
     """List all tracked projects."""
     projects = await pm.list_all_projects_async()
+
+    # v6.0: XML Response
+    if XML_RESPONSES_ENABLED:
+        if not projects:
+            return _text(xml_info(
+                tool="projects",
+                message="Keine Projekte",
+                data={"count": 0}
+            ))
+
+        projects_data = [
+            {"name": p["name"], "phase": p["phase"], "last_activity": p["last"]}
+            for p in projects[:10]
+        ]
+        return _text(xml_info(
+            tool="projects",
+            message=f"{len(projects)} Projekte",
+            data={"count": len(projects), "projects": projects_data}
+        ))
+
+    # Legacy
     if not projects:
         return _text("No projects")
     lines = [f"{p['name']}|{p['phase']}|{p['last']}" for p in projects[:10]]
@@ -1161,9 +1212,29 @@ async def handle_projects(args: Dict[str, Any]) -> List[TextContent]:
 @handler.register("chainguard_config")
 async def handle_config(args: Dict[str, Any]) -> List[TextContent]:
     """View or set config."""
+    updated = False
     if args.get("validation_threshold"):
         CONFIG.validation_reminder_threshold = args["validation_threshold"]
         CONFIG.save()
+        updated = True
+
+    # v6.0: XML Response
+    if XML_RESPONSES_ENABLED:
+        data = {
+            "validation_threshold": CONFIG.validation_reminder_threshold
+        }
+        if updated:
+            return _text(xml_success(
+                tool="config",
+                message="Config aktualisiert",
+                data=data
+            ))
+        return _text(xml_info(
+            tool="config",
+            message="Aktuelle Config",
+            data=data
+        ))
+
     return _text(f"Config: val_threshold={CONFIG.validation_reminder_threshold}")
 
 
@@ -1395,13 +1466,49 @@ async def handle_analyze(args: Dict[str, Any]) -> List[TextContent]:
     target = args.get("target", "")
 
     if not target:
+        # v6.0: XML Response
+        if XML_RESPONSES_ENABLED:
+            return _text(xml_warning(
+                tool="analyze",
+                message="target parameter required"
+            ))
         return _text("❌ target parameter required")
 
     result = await CodeAnalyzer.analyze_file(target, state.project_path)
-    output = CodeAnalyzer.format_output(result)
     state.add_action(f"ANALYZE: {Path(target).name}")
     await pm.save_async(state)
 
+    # v6.0: XML Response
+    if XML_RESPONSES_ENABLED:
+        if result.get("error"):
+            return _text(xml_error(
+                tool="analyze",
+                message=result["error"]
+            ))
+
+        data = {
+            "file": Path(target).name,
+            "metrics": {
+                "loc": result.get("loc", 0),
+                "code_lines": result.get("code_lines", 0),
+                "functions": result.get("functions", 0),
+                "classes": result.get("classes", 0),
+                "complexity": result.get("complexity", 0)
+            },
+            "patterns": result.get("patterns", []),
+            "hotspots": result.get("hotspots", [])[:3],
+            "todos": result.get("todos", [])[:3]
+        }
+        if result.get("checklist"):
+            data["checklist"] = result["checklist"]
+
+        return _text(xml_success(
+            tool="analyze",
+            message=f"Analyse: {Path(target).name}",
+            data=data
+        ))
+
+    output = CodeAnalyzer.format_output(result)
     return _text(output)
 
 
