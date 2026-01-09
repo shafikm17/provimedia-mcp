@@ -4631,9 +4631,9 @@ async def handle_symbol_mode(args: Dict[str, Any]) -> List[TextContent]:
     mode = args.get("mode")
 
     if mode:
-        # Set new mode
+        # Set new mode (case-insensitive - accepts both "STRICT" and "strict")
         try:
-            new_mode = SymbolValidationMode(mode.upper())
+            new_mode = SymbolValidationMode(mode.lower())
             SymbolValidator.set_mode(new_mode)
 
             mode_descriptions = {
