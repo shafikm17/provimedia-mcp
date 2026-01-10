@@ -289,6 +289,16 @@ This project is licensed under the **Polyform Noncommercial License 1.0.0**.
 
 See the [LICENSE](LICENSE) file for full details.
 
+### Third-Party Licenses
+
+This project includes data derived from the following open source projects:
+
+| Component | License | Copyright |
+|-----------|---------|-----------|
+| [JetBrains phpstorm-stubs](https://github.com/JetBrains/phpstorm-stubs) | Apache-2.0 | © 2010-2024 JetBrains s.r.o. |
+
+The PHP builtins database (`data/php_builtins.json`) is generated from phpstorm-stubs and used for hallucination prevention in symbol validation.
+
 ## Credits
 
 Created and maintained by **[Provimedia GmbH](https://provimedia.de)**
