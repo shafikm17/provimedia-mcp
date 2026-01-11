@@ -306,6 +306,18 @@ Created and maintained by **[Provimedia GmbH](https://provimedia.de)**
 
 ## Changelog
 
+### v6.4.6
+- **String-Content Stripping for False Positive Prevention** - Prevents hallucination warnings for text inside strings
+  - HTML placeholders: `placeholder="Max Mustermann (optional)"` no longer triggers warnings
+  - SQL in strings: `"SELECT * FROM table_name WHERE..."` no longer detects table names as calls
+  - Preserves interpolated strings (f-strings, $-strings, template literals) since they contain real code
+  - 9 new tests for string-content false positive prevention
+
+### v6.4.5
+- **Symbol-Warnings Block Finish** - `chainguard_finish()` is blocked when symbol warnings exist (unless `force=True`)
+- **Docstring/Multi-line Comment Skipping** - Function calls in docstrings and comments are no longer detected
+- **Python Stdlib Extended** - Added `field`, `dataclass`, `Optional`, `Path`, `Any`, `List`, `Dict`, etc.
+
 ### v6.4.4
 - **Extended Builtins: JS Web APIs + SQL Functions** - Fixes false positives
   - JavaScript: Added `IntersectionObserver`, `MutationObserver`, `ResizeObserver`, `FormData`, `AbortController`, `WebSocket`, `Worker`, and 30+ more Web APIs
