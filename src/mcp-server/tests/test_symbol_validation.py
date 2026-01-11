@@ -342,6 +342,47 @@ public function process($data) {
         """Test GROUP_CONCAT() is recognized as builtin (SQL function in PHP)."""
         assert is_builtin("GROUP_CONCAT", Language.PHP)
 
+    # --- String Content False Positive Prevention (v6.4.6) ---
+
+    def test_php_placeholder_not_detected(self):
+        """Test that placeholder text is not detected as function call (v6.4.6)."""
+        code = '<input placeholder="Max Mustermann (optional)" type="text">'
+        calls = extractor.extract_calls(code, Language.PHP)
+        names = [c[0] for c in calls]
+        assert "Mustermann" not in names
+
+    def test_php_sql_table_in_string_not_detected(self):
+        """Test that SQL table names in strings are not detected (v6.4.6)."""
+        code = '$sql = "SELECT * FROM linkedfit_sessions WHERE id = ?";'
+        calls = extractor.extract_calls(code, Language.PHP)
+        names = [c[0] for c in calls]
+        assert "linkedfit_sessions" not in names
+
+    def test_php_html_attribute_parens_not_detected(self):
+        """Test that HTML attributes with parentheses are not detected."""
+        code = '$html = \'<div title="Click here (optional)">Test</div>\';'
+        calls = extractor.extract_calls(code, Language.PHP)
+        names = [c[0] for c in calls]
+        assert "here" not in names
+        assert "optional" not in names
+
+    def test_php_sql_subquery_not_detected(self):
+        """Test that SQL subquery patterns are not detected."""
+        code = '$sql = "SELECT * FROM (SELECT id FROM users WHERE active = 1) AS subquery";'
+        calls = extractor.extract_calls(code, Language.PHP)
+        names = [c[0] for c in calls]
+        assert "users" not in names
+        assert "active" not in names
+        assert "subquery" not in names
+
+    def test_php_real_call_still_detected(self):
+        """Test that real function calls are still detected after string stripping."""
+        code = '$result = processData($sql = "SELECT * FROM table WHERE id = ?");'
+        calls = extractor.extract_calls(code, Language.PHP)
+        names = [c[0] for c in calls]
+        assert "processData" in names
+        assert "table" not in names  # Inside string
+
     # --- Dynamic Pattern Tests (5) ---
 
     def test_php_dynamic_variable_call(self):
@@ -612,6 +653,40 @@ class TestJavaScriptPatterns:
     def test_js_builtin_abort_controller(self):
         """Test AbortController is recognized as builtin."""
         assert is_builtin("AbortController", Language.JAVASCRIPT)
+
+    # --- String Content False Positive Prevention (v6.4.6) ---
+
+    def test_js_string_with_parens_not_detected(self):
+        """Test that strings with parentheses are not detected (v6.4.6)."""
+        code = 'const msg = "Hello World (optional)";'
+        calls = extractor.extract_calls(code, Language.JAVASCRIPT)
+        names = [c[0] for c in calls]
+        assert "World" not in names
+        assert "optional" not in names
+
+    def test_js_template_literal_text_not_detected(self):
+        """Test that template literal text is not detected."""
+        code = 'const html = `<input placeholder="Name (required)">`; '
+        calls = extractor.extract_calls(code, Language.JAVASCRIPT)
+        names = [c[0] for c in calls]
+        assert "Name" not in names
+        assert "required" not in names
+
+    def test_js_sql_in_string_not_detected(self):
+        """Test that SQL in strings is not detected."""
+        code = "const sql = 'SELECT * FROM users WHERE status = 1';"
+        calls = extractor.extract_calls(code, Language.JAVASCRIPT)
+        names = [c[0] for c in calls]
+        assert "users" not in names
+        assert "status" not in names
+
+    def test_js_real_call_still_detected(self):
+        """Test that real calls are still detected after string stripping."""
+        code = 'const result = fetch("https://example.com/api(v2)");'
+        calls = extractor.extract_calls(code, Language.JAVASCRIPT)
+        names = [c[0] for c in calls]
+        assert "fetch" in names
+        assert "api" not in names  # Inside string
 
     # --- Dynamic Pattern Tests (5) ---
 

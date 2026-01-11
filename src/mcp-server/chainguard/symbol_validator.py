@@ -108,8 +108,12 @@ class SymbolExtractor:
             if self._is_comment_line(line, lang):
                 continue
 
+            # Strip string contents to avoid false positives (v6.4.6)
+            # This prevents detecting "Max Mustermann (optional)" as a call
+            stripped_line = self._strip_string_contents(line, lang)
+
             for pattern in patterns:
-                for match in pattern.finditer(line):
+                for match in pattern.finditer(stripped_line):
                     # Get the captured group(s)
                     groups = match.groups()
                     for name in groups:
@@ -120,6 +124,46 @@ class SymbolExtractor:
                                 calls.append((name, line_num))
 
         return calls
+
+    def _strip_string_contents(self, line: str, lang: Language) -> str:
+        """Strip contents of string literals to avoid false positives.
+
+        This prevents detecting text inside strings like:
+        - placeholder="Max Mustermann (optional)" -> "Mustermann(" false positive
+        - "SELECT * FROM table_name WHERE..." -> "table_name(" false positive
+
+        The string delimiters are preserved but contents replaced with empty.
+        Strings with interpolation (f-strings, $-strings, template literals) are
+        preserved since they contain real code.
+
+        v6.4.6: Added to prevent false positives in HTML attributes and SQL strings.
+        """
+        # Replace double-quoted string contents
+        # BUT skip strings with interpolation markers:
+        # - Python f-strings: f"...{...}..."
+        # - C# interpolated: $"...{...}..."
+        # Pattern: "..." that don't contain { (interpolation marker)
+        line = re.sub(r'(?<![f$])"([^"{\\]|\\.)*"', '""', line)
+
+        # Replace single-quoted string contents (no interpolation in single quotes for most langs)
+        # BUT skip Python f-strings: f'...{...}...'
+        if lang == Language.PYTHON:
+            # Skip f-strings with single quotes
+            line = re.sub(r"(?<!f)'([^'{\\]|\\.)*'", "''", line)
+        else:
+            line = re.sub(r"'([^'\\]|\\.)*'", "''", line)
+
+        # For JavaScript/TypeScript: handle template literals
+        if lang in (Language.JAVASCRIPT, Language.TYPESCRIPT):
+            # Only strip simple template literals WITHOUT interpolation
+            # Template literals with ${...} contain real code, so keep them
+            # Pattern: backtick strings that don't contain ${
+            line = re.sub(r'`[^`$]*`', '``', line)
+
+        # For PHP: handle heredoc/nowdoc markers but not full content
+        # (multi-line heredocs are handled by _find_docstring_lines)
+
+        return line
 
     def _find_docstring_lines(self, content: str, lang: Language) -> Set[int]:
         """Find line numbers that are inside docstrings or multi-line comments.
