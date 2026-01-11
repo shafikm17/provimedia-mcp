@@ -1003,10 +1003,15 @@ def is_builtin(name: str, lang: Language) -> bool:
     """Check if a symbol name is a builtin for the given language.
 
     For PHP, this automatically loads 5000+ builtins from generated JSON.
+    PHP is case-insensitive, so we compare lowercase.
     """
     # Lazy-load PHP builtins on first PHP check
     if lang == Language.PHP and not PHPBuiltinsLoader.is_loaded():
         PHPBuiltinsLoader.load()
+
+    # PHP is case-insensitive - compare lowercase
+    if lang == Language.PHP:
+        return name.lower() in BUILTINS.get(lang, set())
 
     return name in BUILTINS.get(lang, set())
 

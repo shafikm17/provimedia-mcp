@@ -306,6 +306,13 @@ Created and maintained by **[Provimedia GmbH](https://provimedia.de)**
 
 ## Changelog
 
+### v6.4.3
+- **PHP Case-Insensitive Builtin Check** - Fixes false positives for uppercase PHP functions
+  - `MAX()`, `DATE()`, `COUNT()`, `StrLen()` etc. now correctly recognized as builtins
+  - PHP is case-insensitive, so `is_builtin()` now compares lowercase for PHP
+  - Reduces false positives from SQL functions used in PHP code
+  - 4 new tests for case-insensitivity
+
 ### v6.4.2
 - **Action-Required Context Injection** - Forces LLM to actively check hallucination warnings
   - `<action-required>` XML tags wrap symbol warnings at `chainguard_finish()`

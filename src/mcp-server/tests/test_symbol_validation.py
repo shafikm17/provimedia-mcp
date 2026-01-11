@@ -268,6 +268,24 @@ class TestPHPPatterns:
         """Test custom function is not recognized as builtin."""
         assert not is_builtin("myCustomFunction", Language.PHP)
 
+    # --- PHP Case-Insensitivity Tests (v6.4.3) ---
+
+    def test_php_builtin_uppercase_max(self):
+        """Test MAX() is recognized as builtin (PHP is case-insensitive)."""
+        assert is_builtin("MAX", Language.PHP)
+
+    def test_php_builtin_uppercase_date(self):
+        """Test DATE() is recognized as builtin (PHP is case-insensitive)."""
+        assert is_builtin("DATE", Language.PHP)
+
+    def test_php_builtin_mixedcase_strlen(self):
+        """Test StrLen() is recognized as builtin (PHP is case-insensitive)."""
+        assert is_builtin("StrLen", Language.PHP)
+
+    def test_php_builtin_uppercase_count(self):
+        """Test COUNT() is recognized as builtin (PHP is case-insensitive)."""
+        assert is_builtin("COUNT", Language.PHP)
+
     # --- Dynamic Pattern Tests (5) ---
 
     def test_php_dynamic_variable_call(self):
