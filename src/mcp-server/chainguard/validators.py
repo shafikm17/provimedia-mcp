@@ -249,19 +249,10 @@ class SyntaxValidator:
             # Use existing config
             cmd.extend(["--configuration", str(config_file)])
         else:
-            # No config: use autoload and scan directories
-            cmd.extend([
-                "--level", str(PHPSTAN_LEVEL),
-                "--autoload-file", str(project_root / "vendor" / "autoload.php")
-                    if (project_root / "vendor" / "autoload.php").exists() else "",
-            ])
-            # Remove empty autoload if vendor doesn't exist
-            cmd = [c for c in cmd if c]
-
-            # Add scan directories for function discovery
-            for scan_dir in ["includes", "src", "lib", "app"]:
-                if (project_root / scan_dir).exists():
-                    cmd.extend(["--autoload-file", str(project_root / scan_dir)])
+            # No config: check for autoload
+            autoload_file = project_root / "vendor" / "autoload.php"
+            if autoload_file.exists():
+                cmd.extend(["--autoload-file", str(autoload_file)])
 
         cmd.extend([
             "--level", str(PHPSTAN_LEVEL),

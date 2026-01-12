@@ -167,7 +167,16 @@ cp -r src/mcp-server/chainguard ~/.chainguard/
 
 ---
 
-## Modulstruktur (v6.4.6)
+## Changelog
+
+### v6.4.7 (2026-01-12)
+- **Fix**: PHPStan `--autoload-file` ohne Argument wenn vendor/autoload.php nicht existiert
+  - Problem: Befehl enthielt `--autoload-file` Flag ohne nachfolgendes Argument
+  - Lösung: Flag wird nur hinzugefügt wenn autoload.php existiert
+
+---
+
+## Modulstruktur (v6.4.7)
 
 Das Chainguard MCP Server Package besteht aus folgenden Modulen:
 
