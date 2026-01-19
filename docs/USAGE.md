@@ -1,4 +1,4 @@
-# Chainguard v6.0.0 - Nutzungsanleitung
+# Chainguard v6.5.0 - Nutzungsanleitung
 
 ## Schnellstart
 
@@ -46,7 +46,7 @@ chainguard_finish(confirmed=true)    # Schritt 2: Schließt ab
 
 ## v6.0 - XML Response System & Modulare Architektur
 
-Das Chainguard Package besteht aus **21 Modulen**:
+Das Chainguard Package besteht aus **24 Modulen**:
 
 ### Core Module
 | Modul | Zweck |
@@ -93,6 +93,18 @@ Das Chainguard Package besteht aus **21 Modulen**:
 | Modul | Zweck |
 |-------|-------|
 | `xml_response.py` | XML Response System - strukturierte XML-Ausgabe für bessere Claude-Comprehension |
+| `toon.py` | TOON Encoder - Token-Oriented Object Notation für 30-60% weniger Tokens |
+
+### Phase 6 Features (v6.1+)
+| Modul | Zweck |
+|-------|-------|
+| `symbol_validator.py` | Halluzinationsprävention - Erkennt falsche Funktionsaufrufe |
+| `package_validator.py` | Slopsquatting-Detection - Erkennt halluzinierte Package-Imports |
+
+### Phase 7 Features (v6.5+)
+| Modul | Zweck |
+|-------|-------|
+| `kanban.py` | Kanban-System für komplexe, mehrtägige Projekte |
 
 ### Utilities
 | Modul | Zweck |
@@ -403,6 +415,23 @@ cp -r src/mcp-server/chainguard ~/.chainguard/
 - **Long-Term Memory**: ChromaDB + sentence-transformers Integration
 - **Projekt-Memory**: Semantische Suche im Projekt-Wissen
 - **Memory Tools**: `chainguard_memory_init`, `chainguard_memory_query`, `chainguard_memory_update`
+
+## v6.5.0 Changelog (Phase 7)
+
+- **Kanban-System**: Persistente Aufgabenverwaltung für komplexe, mehrtägige Projekte
+  - `kanban.py` Modul mit KanbanCard, KanbanBoard, KanbanManager
+  - 10 neue Tools für den kompletten Kanban-Workflow
+  - 7 Presets: default, programming, content, devops, research, agile, simple
+  - Custom Columns via LLM-Prompt-Injection
+  - YAML-Persistenz in `.claude/kanban.yaml`
+  - Dependency-Tracking und Blocked-Card-Erkennung
+- **Smart Kanban Suggestion**: Automatische Empfehlung bei ≥5 Kriterien oder Keywords wie "mehrtägig", "komplex"
+
+## v6.1.0 Changelog (Phase 6)
+
+- **Halluzinationsprävention**: Erkennt LLM-halluzinierte Funktionsaufrufe
+- **Slopsquatting-Detection**: Erkennt typosquatted Package-Namen
+- **Scope Reminder Hook**: Erinnert an `set_scope()` vor Arbeitsbeginn
 
 ## v5.0.0 Changelog
 

@@ -55,6 +55,7 @@
 
 ### Kanban System (v6.5)
 - **Persistent Task Management** - Track complex, multi-day projects with a visual board
+- **Smart Kanban Suggestion** - Automatically recommends Kanban for ≥5 criteria or complexity keywords
 - **7 Column Presets** - default, programming, content, devops, research, agile, simple
 - **Custom Columns** - Define task-specific columns via LLM prompt injection
 - **Dependency Tracking** - Cards can depend on other cards, blocked cards are highlighted
@@ -288,7 +289,7 @@ python3 -m pytest tests/ -v
 | Symbol Validation | 47 |
 | DB Credentials | 30 |
 | Kanban System | 50 |
-| **Total** | **1195+** |
+| **Total** | **1228+** |
 
 ## Contributing
 
@@ -343,6 +344,7 @@ Created and maintained by **[Provimedia GmbH](https://provimedia.de)**
   - Graphical board view with progress bar and blocked card highlighting
   - Dependency tracking between cards
   - 50 new unit tests
+- **Smart Kanban Suggestion** - Automatically recommends Kanban when ≥5 acceptance criteria or complexity keywords detected ("mehrtägig", "komplex", "pipeline", etc.)
 
 ### v6.4.6
 - **String-Content Stripping for False Positive Prevention** - Prevents hallucination warnings for text inside strings

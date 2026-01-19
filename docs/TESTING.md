@@ -7,10 +7,10 @@ Diese Dokumentation beschreibt das Unit-Test-System für den Chainguard MCP Serv
 | Metrik | Wert |
 |--------|------|
 | Test-Framework | pytest |
-| Anzahl Tests | 701+ |
-| Test-Dateien | 16 |
-| Gesamt-Coverage | ~70% |
-| Abdeckung | Alle Module inkl. Phase 5 Features (XML Response System) |
+| Anzahl Tests | 1228+ |
+| Test-Dateien | 24 |
+| Gesamt-Coverage | ~75% |
+| Abdeckung | Alle Module inkl. Phase 7 Features (Kanban System) |
 
 ## Struktur
 
@@ -49,7 +49,16 @@ src/mcp-server/
 │   ├── test_code_summarizer.py # Deep Logic Summaries (45 Tests)
 │   │
 │   │   # Phase 5 Tests (v6.0+)
-│   └── test_xml_response.py    # XML Response System (32 Tests)
+│   ├── test_xml_response.py    # XML Response System (32 Tests)
+│   ├── test_toon.py            # TOON Encoder (63 Tests)
+│   │
+│   │   # Phase 6 Tests (v6.1+)
+│   ├── test_symbol_validation.py  # Symbol Validation (47 Tests)
+│   ├── test_package_validator.py  # Package Validation (71 Tests)
+│   ├── test_db_credentials.py     # DB Credentials (30 Tests)
+│   │
+│   │   # Phase 7 Tests (v6.5+)
+│   └── test_kanban.py          # Kanban System (50 Tests)
 │
 └── chainguard/
     └── ...                  # Module unter Test
@@ -364,6 +373,73 @@ Testet das XML Response System:
 - `test_response_with_context` - Context-Injection für Modi
 - `test_set_scope_response` - Realistischer set_scope Output
 - `test_blocked_scope_response` - Blocker-Response Format
+
+---
+
+## Phase 6 Tests (v6.1+)
+
+### test_toon.py (63 Tests)
+
+Testet den TOON Encoder für Token-Optimierung:
+
+| Klasse | Tests | Beschreibung |
+|--------|-------|--------------|
+| `TestTOONEncoder` | 28 | Encoding/Decoding, Type-Handling |
+| `TestArrayEncoding` | 15 | Array-Optimierung |
+| `TestObjectEncoding` | 12 | Object-Encoding |
+| `TestEdgeCases` | 8 | Unicode, Nested, Large Data |
+
+### test_symbol_validation.py (47 Tests)
+
+Testet die Halluzinationsprävention:
+
+| Klasse | Tests | Beschreibung |
+|--------|-------|--------------|
+| `TestSymbolValidator` | 20 | Funktionsaufruf-Erkennung |
+| `TestBuiltinDetection` | 15 | PHP/JS/Python Builtins |
+| `TestConfidenceScoring` | 12 | Konfidenz-Berechnung |
+
+### test_package_validator.py (71 Tests)
+
+Testet die Slopsquatting-Detection:
+
+| Klasse | Tests | Beschreibung |
+|--------|-------|--------------|
+| `TestPackageValidator` | 30 | Package-Import-Validierung |
+| `TestTypoDetection` | 25 | Levenshtein-basierte Typo-Erkennung |
+| `TestRegistryChecks` | 16 | composer.json, package.json, requirements.txt |
+
+### test_db_credentials.py (30 Tests)
+
+Testet die persistenten DB-Credentials:
+
+| Klasse | Tests | Beschreibung |
+|--------|-------|--------------|
+| `TestCredentialStore` | 15 | Save/Load/Delete Credentials |
+| `TestObfuscation` | 10 | XOR + Base64 Obfuskation |
+| `TestProjectIsolation` | 5 | Projekt-spezifische Credentials |
+
+---
+
+## Phase 7 Tests (v6.5+)
+
+### test_kanban.py (50 Tests)
+
+Testet das Kanban-System für komplexe Projekte:
+
+| Klasse | Tests | Beschreibung |
+|--------|-------|--------------|
+| `TestKanbanCard` | 10 | Card-Dataclass, Status, Priority |
+| `TestKanbanBoard` | 12 | Board-Initialisierung, Presets, Columns |
+| `TestKanbanManager` | 15 | Add/Move/Delete/Archive Cards |
+| `TestDependencyTracking` | 8 | Blocked-Card-Erkennung |
+| `TestYAMLPersistence` | 5 | Save/Load Board State |
+
+**Wichtige Tests:**
+- `test_preset_columns` - Prüft alle 7 Presets (default, programming, etc.)
+- `test_card_dependencies` - Prüft Blocked-Status bei unerfüllten Dependencies
+- `test_board_persistence` - Prüft YAML Save/Load Roundtrip
+- `test_archive_card` - Prüft Archivierung abgeschlossener Cards
 
 ---
 

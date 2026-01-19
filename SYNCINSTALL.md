@@ -30,9 +30,8 @@ grep "MANDATORY-START" ~/.chainguard/templates/CHAINGUARD.md.block | head -1
 | `src/mcp-server/chainguard/config.py` | `VERSION = "x.x.x"` | [ ] |
 | `src/hooks/chainguard_enforcer.py` | `Enforcer Hook vx.x` | [ ] |
 | `src/templates/CHAINGUARD.md.block` | `CHAINGUARD-MANDATORY-START vx.x.x` | [ ] |
-| `templates/CLAUDE.md` | Titel `# CHAINGUARD vx.x.x` | [ ] |
+| `CLAUDE.md` (root) | Titel in MANDATORY block | [ ] |
 | `installer/install.sh` | `CHAINGUARD_VERSION="x.x.x"` | [ ] |
-| `CLAUDE.md` | Titel `# CHAINGUARD vx.x.x` | [ ] |
 
 ### 2. MCP Package synchronisieren
 
@@ -70,8 +69,8 @@ ls -la ~/.chainguard/hooks/chainguard_scope_reminder.py
 # CHAINGUARD.md.block (wird vom Hook genutzt!)
 cp src/templates/CHAINGUARD.md.block ~/.chainguard/templates/
 
-# CLAUDE.md Template
-cp templates/CLAUDE.md ~/.chainguard/templates/
+# CLAUDE.md Template (from project root)
+cp CLAUDE.md ~/.chainguard/templates/
 
 # Verifizieren
 grep "MANDATORY-START" ~/.chainguard/templates/CHAINGUARD.md.block | head -1
@@ -105,7 +104,7 @@ cp src/hooks/chainguard_enforcer.py ~/.chainguard/hooks/ && \
 cp src/hooks/chainguard_memory_inject.py ~/.chainguard/hooks/ && \
 cp src/hooks/chainguard_scope_reminder.py ~/.chainguard/hooks/ && \
 cp src/templates/CHAINGUARD.md.block ~/.chainguard/templates/ && \
-cp templates/CLAUDE.md ~/.chainguard/templates/ && \
+cp CLAUDE.md ~/.chainguard/templates/ && \
 cp -r docs/ ~/.chainguard/ && \
 echo "Sync abgeschlossen - Version:" && \
 grep "VERSION = " ~/.chainguard/chainguard/config.py
@@ -160,7 +159,7 @@ cp -r src/mcp-server/chainguard ~/.chainguard/
 | `src/hooks/chainguard_memory_inject.py` | `~/.chainguard/hooks/chainguard_memory_inject.py` | UserPromptSubmit Memory Injection |
 | `src/hooks/chainguard_scope_reminder.py` | `~/.chainguard/hooks/chainguard_scope_reminder.py` | UserPromptSubmit Scope Reminder |
 | `src/templates/CHAINGUARD.md.block` | `~/.chainguard/templates/CHAINGUARD.md.block` | Hook-Template |
-| `templates/CLAUDE.md` | `~/.chainguard/templates/CLAUDE.md` | Vollständiges Template |
+| `CLAUDE.md` (root) | `~/.chainguard/templates/CLAUDE.md` | Vollständiges Template |
 | `docs/` | `~/.chainguard/docs/` | Dokumentation |
 | `installer/install.sh` | - | Installer (bleibt im Repo) |
 | `CLAUDE.md` | - | Projekt-spezifisch (wird vom Hook aktualisiert) |
