@@ -31,77 +31,30 @@
 | 5 | `chainguard_kanban_show()` | **Bei komplexen Projekten: Überblick behalten!** |
 | 6 | `chainguard_finish(confirmed=True)` | Am Task-Ende |
 
-> **v6.5 Features:** Kanban-System, TOON Token-Optimierung, Task-Mode System, Halluzination Prevention
-
 ### Minimaler Workflow
 
 ```python
-# 1. ZUERST - Scope setzen (PFLICHT!)
+# 1. Scope setzen (PFLICHT!)
 chainguard_set_scope(description="Was du baust", working_dir="/pfad")
-
-# 2. BEI DB-ARBEIT - Schema prüfen (BLOCKIERT SONST!)
-chainguard_db_connect(host="localhost", user="root", password="...", database="mydb")
-chainguard_db_schema()  # Zeigt alle Tabellen + Spalten!
-
-# 3. Arbeiten + Tracken
-# ... Edit/Write ...
-chainguard_track(file="...", ctx="...")
-
-# 4. Bei Web-Projekten (PHP/JS/TS): HTTP-Tests!
-chainguard_set_base_url(base_url="http://localhost:8888/app")
-chainguard_test_endpoint(url="/geänderte-route", method="GET")
-
-# 5. Bei komplexen Projekten: Kanban nutzen!
-chainguard_kanban_show()  # Vollständige Übersicht
-
-# 6. Abschliessen
-chainguard_finish(confirmed=True)
+# 2. Bei DB-Arbeit: chainguard_db_connect() + chainguard_db_schema()
+# 3. Arbeiten + Tracken: chainguard_track(file="...", ctx="...")
+# 4. Web-Projekte: chainguard_test_endpoint(url="/route")
+# 5. Komplexe Projekte: chainguard_kanban_show()
+# 6. Abschliessen: chainguard_finish(confirmed=True)
 ```
 
 ### Context-Canary: `ctx="..."`
 
 Bei JEDEM Chainguard-Aufruf `ctx="..."` mitgeben! Fehlt er -> Kontext verloren -> Auto-Refresh.
 
-### Kanban-System (v6.5) - Für komplexe Projekte
-
-Bei mehrtägigen Projekten oder Pipelines mit >5 Tasks:
+### Kanban (v6.5) - Für komplexe Projekte
 
 ```python
-# Board initialisieren mit task-spezifischen Spalten (EMPFOHLEN!)
 chainguard_kanban_init(preset="programming")  # oder: content, devops, research
-# Oder: Custom Columns
-chainguard_kanban_init(columns=["design", "implementation", "testing", "deployed"])
-
-# Board anzeigen (kompakt)
-chainguard_kanban()
-
-# Vollständige grafische Ansicht mit allen Details
-chainguard_kanban_show()
-
-# Card hinzufügen
-chainguard_kanban_add(
-    title="Feature implementieren",
-    priority="high",  # low/medium/high/critical
-    detail="## Details\n\n- Schritt 1\n- Schritt 2"
-)
-
-# Card verschieben
-chainguard_kanban_move(card_id="abc123", to_column="in_progress")
-
-# Card Details laden (inkl. verknüpfte MD-Datei)
-chainguard_kanban_detail(card_id="abc123")
-
-# Card erledigt und archivieren
-chainguard_kanban_move(card_id="abc123", to_column="done")
-chainguard_kanban_archive(card_id="abc123")
+chainguard_kanban_add(title="Task", priority="high", detail="## MD")
+chainguard_kanban_move(card_id="abc", to_column="in_progress")
+chainguard_kanban_show()  # Grafische Ansicht
 ```
 
-**Kanban-Struktur im Projekt:**
-```
-.claude/
-├── kanban.yaml      # Board-Daten
-├── cards/
-│   └── <id>.md      # Detail-Dateien
-└── archive.yaml     # Archivierte Cards
-```
+**Struktur:** `.claude/kanban.yaml`, `.claude/cards/<id>.md`
 <!-- CHAINGUARD-MANDATORY-END -->
